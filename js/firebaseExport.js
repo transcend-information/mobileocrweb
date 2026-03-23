@@ -65,6 +65,10 @@ async function downloadFirebaseExcel() {
         'Company Website': data.companyWebsite || '',
         'Tax ID': data.taxId || '',
         'Note': data.note || '',
+        'Potential': data.potential || '',
+        'Interested Product': Array.isArray(data.interestedProducts)
+          ? data.interestedProducts.join(', ')
+          : (data.interestedProducts || ''),
         'Scanned By': data.scannedBy || '',
         'Scanned By Office': data.scannedByOffice || '',
         'Exhibition ID': data.exhibitionId || '',
@@ -89,6 +93,8 @@ async function downloadFirebaseExcel() {
       { wch: 30 }, // Company Website
       { wch: 10 }, // Tax ID
       { wch: 20 }, // Note
+      { wch: 20 }, // Potential
+      { wch: 40 }, // Interested Products
       { wch: 20 }, // Scanned By
       { wch: 8 }, // Scanned By Office
       { wch: 10 }, // Exhibition ID

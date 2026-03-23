@@ -759,6 +759,8 @@ function saveToLocalStorage() {
     company: document.getElementById("companyInput").value,
     address: document.getElementById("addressInput").value,
     website: document.getElementById("websiteInput").value,
+    potential: document.getElementById("potentialInput").value,
+    interestedProducts: getInterestedProducts(),
     note: document.getElementById("noteInput").value,
     taxId: document.getElementById("taxIdInput").value,
     username: localStorage.getItem('userRealName') || "",
@@ -846,6 +848,8 @@ function clearAll() {
   document.getElementById("companyInput").value = "";
   document.getElementById("addressInput").value = "";
   document.getElementById("websiteInput").value = "";
+  document.getElementById("potentialInput").value = "";
+  setInterestedProducts([]);
   document.getElementById("noteInput").value = "";
   document.getElementById("taxIdInput").value = "";
   document.getElementById("fileInput").value = "";
@@ -887,6 +891,8 @@ function exportHistoryToExcel() {
     stripHtml(t.labelWebsite),
     stripHtml(t.labelNote),
     stripHtml(t.labelTaxId),
+    "Potential",
+    "Interested Product",
     "User Name",
     "Office",
   ];
@@ -905,6 +911,8 @@ function exportHistoryToExcel() {
     item.website,
     item.note,
     item.taxId,
+    item.potential || '',
+    Array.isArray(item.interestedProducts) ? item.interestedProducts.join(', ') : (item.interestedProducts || ''),
     item.username || "",
     item.office || "",
   ]);
@@ -929,6 +937,8 @@ function exportHistoryToExcel() {
     { wch: 30 }, // Website
     { wch: 30 }, // Note
     { wch: 15 }, // Tax ID
+    { wch: 20 }, // Potential
+    { wch: 40 }, // Interested Products
     { wch: 15 }, // User Name
     { wch: 10 }, // Office
   ];

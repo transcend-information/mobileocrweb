@@ -276,7 +276,13 @@ async function syncHistoryToCloud() {
         fax: card.fax || '',
         email: card.email || '',
         taxId: card.taxId || '',
-        note: card.note || '',        
+        note: card.note || '',
+        potential: card.potential || '',
+        interestedProducts: Array.isArray(card.interestedProducts)
+          ? card.interestedProducts
+          : (typeof card.interestedProducts === 'string' && card.interestedProducts
+              ? card.interestedProducts.split(',').map(s => s.trim()).filter(Boolean)
+              : []),
 
         scannedBy: userInfo.getUserRealName(),
         scannedByOffice: userInfo.getUserOffice(),
