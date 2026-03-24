@@ -50,6 +50,10 @@ function changeLanguage() {
   document.getElementById("labelCompany").innerHTML = t.labelCompany;
   document.getElementById("labelAddress").innerHTML = t.labelAddress;
   document.getElementById("labelWebsite").innerHTML = t.labelWebsite;
+  document.getElementById("labelPotential").innerHTML = t.labelPotential;
+  document.getElementById("labelInterestedProducts").innerHTML = t.labelInterestedProducts;
+  document.getElementById("potentialInput").options[0].text = t.placeholderPotential;
+  document.getElementById("interestedProductsPlaceholder").textContent = t.placeholderSelectProducts;
   document.getElementById("labelNote").innerHTML = t.labelNote;
   document.getElementById("labelTaxId").innerHTML = t.labelTaxId;
   document.getElementById("btnSave").innerHTML = t.btnSave;
@@ -759,6 +763,8 @@ function saveToLocalStorage() {
     company: document.getElementById("companyInput").value,
     address: document.getElementById("addressInput").value,
     website: document.getElementById("websiteInput").value,
+    potential: document.getElementById("potentialInput").value,
+    interestedProducts: getInterestedProducts(),
     note: document.getElementById("noteInput").value,
     taxId: document.getElementById("taxIdInput").value,
     username: localStorage.getItem('userRealName') || "",
@@ -846,6 +852,8 @@ function clearAll() {
   document.getElementById("companyInput").value = "";
   document.getElementById("addressInput").value = "";
   document.getElementById("websiteInput").value = "";
+  document.getElementById("potentialInput").value = "";
+  setInterestedProducts([]);
   document.getElementById("noteInput").value = "";
   document.getElementById("taxIdInput").value = "";
   document.getElementById("fileInput").value = "";
@@ -887,6 +895,8 @@ function exportHistoryToExcel() {
     stripHtml(t.labelWebsite),
     stripHtml(t.labelNote),
     stripHtml(t.labelTaxId),
+    "Potential",
+    "Interested Product",
     "User Name",
     "Office",
   ];
@@ -905,6 +915,8 @@ function exportHistoryToExcel() {
     item.website,
     item.note,
     item.taxId,
+    item.potential || '',
+    Array.isArray(item.interestedProducts) ? item.interestedProducts.join(', ') : (item.interestedProducts || ''),
     item.username || "",
     item.office || "",
   ]);
@@ -929,6 +941,8 @@ function exportHistoryToExcel() {
     { wch: 30 }, // Website
     { wch: 30 }, // Note
     { wch: 15 }, // Tax ID
+    { wch: 20 }, // Potential
+    { wch: 40 }, // Interested Products
     { wch: 15 }, // User Name
     { wch: 10 }, // Office
   ];

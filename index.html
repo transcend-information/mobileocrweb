@@ -234,6 +234,49 @@
             <input type="url" class="form-input" id="websiteInput" />
           </div>
 
+          <div class="form-group">
+            <label class="form-label" id="labelPotential"
+              ><i class="material-icons">trending_up</i> Potential</label
+            >
+            <select class="form-input" id="potentialInput">
+              <option value="">-- Select Potential --</option>
+              <option value="Very high potential">Very high potential</option>
+              <option value="High Potential">High Potential</option>
+              <option value="Potential to be checked">Potential to be checked</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label" id="labelInterestedProducts"
+              ><i class="material-icons">inventory_2</i> Interested Product</label
+            >
+            <div class="multiselect-wrapper" id="interestedProductsWrapper">
+              <div class="multiselect-display" id="interestedProductsDisplay" tabindex="0">
+                <span class="multiselect-placeholder" id="interestedProductsPlaceholder">-- Select Products --</span>
+              </div>
+              <div class="multiselect-dropdown" id="interestedProductsDropdown">
+                <label class="multiselect-option" data-value="Embedded SSD">
+                  <input type="checkbox" value="Embedded SSD" /> Embedded SSD
+                </label>
+                <label class="multiselect-option" data-value="Embedded DRAM">
+                  <input type="checkbox" value="Embedded DRAM" /> Embedded DRAM
+                </label>
+                <label class="multiselect-option" data-value="Embedded Memory Card">
+                  <input type="checkbox" value="Embedded Memory Card" /> Embedded Memory Card
+                </label>
+                <label class="multiselect-option" data-value="Embedded Flash">
+                  <input type="checkbox" value="Embedded Flash" /> Embedded Flash
+                </label>
+                <label class="multiselect-option" data-value="Embedded Camera">
+                  <input type="checkbox" value="Embedded Camera" /> Embedded Camera
+                </label>
+                <label class="multiselect-option" data-value="Enterprise SSD">
+                  <input type="checkbox" value="Enterprise SSD" /> Enterprise SSD
+                </label>
+              </div>
+            </div>
+          </div>
+
           <!-- ADDED NOTE FIELD HERE -->
           <div class="form-group">
             <label class="form-label" id="labelNote"
@@ -455,7 +498,158 @@ document.addEventListener('DOMContentLoaded', function() {
       }
     }
   });
+
+  // ── Multi-select widget for Interested Products ──
+  initMultiSelect(
+    'interestedProductsDisplay',
+    'interestedProductsDropdown',
+    'interestedProductsPlaceholder'
+  );
 });
+
+/**
+ * Initialise a custom multi-select tags widget.
+ */
+function initMultiSelect(displayId, dropdownId, placeholderId) {
+  const display = document.getElementById(displayId);
+  const dropdown = document.getElementById(dropdownId);
+  const placeholder = document.getElementById(placeholderId);
+  if (!display || !dropdown || !placeholder) return;
+
+  const options = dropdown.querySelectorAll('.multiselect-option');
+
+  function renderTags() {
+    display.querySelectorAll('.multiselect-tag').forEach(t => t.remove());
+    const selected = Array.from(dropdown.querySelectorAll('input[type="checkbox"]:checked'));
+    if (selected.length === 0) {
+      placeholder.style.display = '';
+    } else {
+      placeholder.style.display = 'none';
+      selected.forEach(function(cb) {
+        const tag = document.createElement('span');
+        tag.className = 'multiselect-tag';
+        tag.textContent = cb.value;
+        const removeBtn = document.createElement('button');
+        removeBtn.type = 'button';
+        removeBtn.className = 'multiselect-tag-remove';
+        removeBtn.innerHTML = '&#x2715;';
+        removeBtn.setAttribute('aria-label', 'Remove ' + cb.value);
+        removeBtn.addEventListener('click', function(e) {
+          e.stopPropagation();
+          cb.checked = false;
+          const opt = dropdown.querySelector('.multiselect-option[data-value="' + cb.value + '"]');
+          if (opt) opt.classList.remove('selected');
+          renderTags();
+        });
+        tag.appendChild(removeBtn);
+        display.insertBefore(tag, placeholder);
+      });
+    }
+  }
+
+  function toggleDropdown() {
+    const isOpen = dropdown.classList.contains('open');
+    if (isOpen) {
+      dropdown.classList.remove('open');
+      display.classList.remove('open');
+    } else {
+      dropdown.classList.add('open');
+      display.classList.add('open');
+    }
+  }
+
+  display.addEventListener('click', function(e) {
+    if (e.target.closest('.multiselect-tag-remove')) return;
+    toggleDropdown();
+  });
+
+  display.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' || e.key === ' ') {
+      e.preventDefault();
+      toggleDropdown();
+    }
+  });
+
+  options.forEach(function(opt) {
+    const cb = opt.querySelector('input[type="checkbox"]');
+    opt.addEventListener('click', function() {
+      // setTimeout(0) defers reading cb.checked until after the browser
+      // has toggled the checkbox state triggered by the label click.
+      setTimeout(function() {
+        if (cb.checked) opt.classList.add('selected');
+        else opt.classList.remove('selected');
+        renderTags();
+      }, 0);
+    });
+    cb.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if (cb.checked) opt.classList.add('selected');
+      else opt.classList.remove('selected');
+      renderTags();
+    });
+  });
+
+  document.addEventListener('click', function(e) {
+    if (!display.contains(e.target) && !dropdown.contains(e.target)) {
+      dropdown.classList.remove('open');
+      display.classList.remove('open');
+    }
+  });
+}
+
+/** Get selected Interested Products as an array. */
+function getInterestedProducts() {
+  const dropdown = document.getElementById('interestedProductsDropdown');
+  if (!dropdown) return [];
+  return Array.from(
+    dropdown.querySelectorAll('input[type="checkbox"]:checked')
+  ).map(function(cb) { return cb.value; });
+}
+
+/** Set selected Interested Products from an array or comma-separated string. */
+function setInterestedProducts(values) {
+  const dropdown = document.getElementById('interestedProductsDropdown');
+  const display = document.getElementById('interestedProductsDisplay');
+  const placeholder = document.getElementById('interestedProductsPlaceholder');
+  if (!dropdown || !display || !placeholder) return;
+  const arr = Array.isArray(values)
+    ? values
+    : (typeof values === 'string' ? values.split(',').map(function(s) { return s.trim(); }).filter(Boolean) : []);
+  dropdown.querySelectorAll('input[type="checkbox"]').forEach(function(cb) {
+    cb.checked = arr.includes(cb.value);
+    const opt = cb.closest('.multiselect-option');
+    if (opt) {
+      if (cb.checked) opt.classList.add('selected');
+      else opt.classList.remove('selected');
+    }
+  });
+  display.querySelectorAll('.multiselect-tag').forEach(function(t) { t.remove(); });
+  const selected = Array.from(dropdown.querySelectorAll('input[type="checkbox"]:checked'));
+  if (selected.length === 0) {
+    placeholder.style.display = '';
+  } else {
+    placeholder.style.display = 'none';
+    selected.forEach(function(cb) {
+      const tag = document.createElement('span');
+      tag.className = 'multiselect-tag';
+      tag.textContent = cb.value;
+      const removeBtn = document.createElement('button');
+      removeBtn.type = 'button';
+      removeBtn.className = 'multiselect-tag-remove';
+      removeBtn.innerHTML = '&#x2715;';
+      removeBtn.setAttribute('aria-label', 'Remove ' + cb.value);
+      removeBtn.addEventListener('click', function(e) {
+        e.stopPropagation();
+        cb.checked = false;
+        const opt = dropdown.querySelector('.multiselect-option[data-value="' + cb.value + '"]');
+        if (opt) opt.classList.remove('selected');
+        setInterestedProducts(getInterestedProducts());
+      });
+      tag.appendChild(removeBtn);
+      display.insertBefore(tag, placeholder);
+    });
+  }
+}
 </script>
         <!-- Language Selector -->
         <div class="language-selector">
