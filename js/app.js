@@ -50,6 +50,10 @@ function changeLanguage() {
   document.getElementById("labelCompany").innerHTML = t.labelCompany;
   document.getElementById("labelAddress").innerHTML = t.labelAddress;
   document.getElementById("labelWebsite").innerHTML = t.labelWebsite;
+  document.getElementById("labelPotential").innerHTML = t.labelPotential;
+  document.getElementById("labelInterestedProducts").innerHTML = t.labelInterestedProducts;
+  document.getElementById("potentialInput").options[0].text = t.placeholderPotential;
+  document.getElementById("interestedProductsPlaceholder").textContent = t.placeholderSelectProducts;
   document.getElementById("labelNote").innerHTML = t.labelNote;
   document.getElementById("labelTaxId").innerHTML = t.labelTaxId;
   document.getElementById("btnSave").innerHTML = t.btnSave;
