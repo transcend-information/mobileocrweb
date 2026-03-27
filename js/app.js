@@ -53,6 +53,9 @@ function changeLanguage() {
   document.getElementById("labelPotential").innerHTML = t.labelPotential;
   document.getElementById("labelInterestedProducts").innerHTML = t.labelInterestedProducts;
   document.getElementById("potentialInput").options[0].text = t.placeholderPotential;
+  document.getElementById("potentialInput").options[1].text = t.potentialVeryHigh;
+  document.getElementById("potentialInput").options[2].text = t.potentialHigh;
+  document.getElementById("potentialInput").options[3].text = t.potentialToBeChecked;
   document.getElementById("interestedProductsPlaceholder").textContent = t.placeholderSelectProducts;
   document.getElementById("labelNote").innerHTML = t.labelNote;
   document.getElementById("labelTaxId").innerHTML = t.labelTaxId;
