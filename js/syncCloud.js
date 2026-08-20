@@ -9,6 +9,7 @@ class syncCloud {
     
     this.db = window.firebaseDB;
     this.modules = window.firebaseModules;
+    this.promptedThresholds = new Set(); // Track which thresholds have been prompted
     this.init();
   }
 
@@ -19,7 +20,8 @@ class syncCloud {
         clearInterval(checkInterval);
         this.db = window.firebaseDB;
         this.modules = window.firebaseModules;
-        this. init();
+        this.promptedThresholds = new Set(); // Initialize tracking
+        this.init();
       }
     }, 100);
   }
@@ -121,6 +123,24 @@ class syncCloud {
                   btnSyncButton.style.cursor = 'pointer';
               }
             }
+
+        // Check if unsynced count matches a threshold and prompt user
+        const thresholds = [5, 10, 15, 20, 25, 30];
+        if (thresholds.includes(unsyncedCount) && !this.promptedThresholds.has(unsyncedCount)) {
+            this.promptedThresholds.add(unsyncedCount);
+            const confirmMessage = 
+                `📤 You have ${unsyncedCount} unsynced business cards!\n\n` +
+                `Would you like to sync them to the cloud now?`;
+            
+            if (confirm(confirmMessage)) {
+                console.log(`✅ User agreed to sync at threshold ${unsyncedCount}`);
+                syncHistoryToCloud();
+                // Reset prompted threshold to allow prompting again if more cards are added
+                this.promptedThresholds.delete(unsyncedCount);
+            } else {
+                console.log(`❌ User declined sync at threshold ${unsyncedCount}`);
+            }
+        }
 
     } catch(e) {
         console.error('Badge update error:', e);
